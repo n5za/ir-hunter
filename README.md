@@ -22,7 +22,7 @@
 
 IR Hunter is an Android infrared remote manager built with Kotlin, Jetpack Compose and Room. Import your remote's Flipper `.ir` file, organize its commands, save profiles, and test matching power commands with a cancellable guided scan.
 
-> **Before installing:** transmitting requires a phone with a compatible **built-in IR emitter**. Android version alone is not enough. Version 1.1 includes an offline starter catalog and still supports importing more device codes. The downloadable APK is a **debug test build**; physical IR operation has not yet been verified on hardware.
+> **Before installing:** transmitting requires a phone with a compatible **built-in IR emitter**. Android version alone is not enough. Version 1.2 includes 5,554 offline remotes and still supports importing more device codes. The downloadable APK is a **debug test build**; physical IR operation has not yet been verified on hardware.
 
 ## What it does
 
@@ -96,7 +96,7 @@ Get-FileHash .\IR-Hunter-debug.apk -Algorithm SHA256
 - Duplicate commands are skipped with warnings; invalid, conflicting or unsupported records are reported.
 - Mixed-device `IR library file` databases are not imported as one remote.
 
-Version 1.1 bundles every usable profile added after Flipper-IRDB's stated CC0 licensing boundary: 121 remotes and 2,586 commands from the pinned upstream snapshot. Three additional files at that boundary have invalid Flipper headers and are excluded. Older upstream files are not bundled because Flipper-IRDB explicitly says they are outside its current CC0 grant. Exact source commits and attribution are stored with the app in `core/data/src/main/assets/third_party/ATTRIBUTION.md`. You can still import files you are entitled to use; importing a file does not grant redistribution rights.
+Version 1.2 bundles 5,554 remotes with 180,578 usable commands. This includes the full 5,433-profile official Flipper Devices IRDB snapshot under MIT, plus 121 CC0 profiles added after the community Flipper-IRDB licensing boundary. Three additional community files have invalid Flipper headers and are excluded; older community files are outside upstream's current CC0 grant. Exact source commits and license notices are packaged in `core/data/src/main/assets/third_party/`. You can still import files you are entitled to use; importing a file does not grant redistribution rights.
 
 ## Build and verification
 

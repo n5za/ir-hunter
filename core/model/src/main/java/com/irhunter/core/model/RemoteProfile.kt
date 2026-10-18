@@ -17,6 +17,7 @@ data class RemoteProfile(
     val originalText: String,
     val commands: List<RemoteCommand>,
     val saved: Boolean = false,
+    val commandCount: Int = commands.size,
 ) {
     fun offCommand(): RemoteCommand? = commands.firstOrNull { it.isOff && it.confirmedOff }
         ?: commands.firstOrNull { it.isOff } ?: commands.firstOrNull { it.isToggle }

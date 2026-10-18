@@ -8,21 +8,30 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 @Entity(tableName = "profiles")
-data class ProfileRow(@PrimaryKey val id: String, val payload: String)
+data class ProfileRow(@PrimaryKey val id: String, val payload: String, val summary: String = "")
 
 @Dao
 interface ProfileDao {
-    @Query("SELECT * FROM profiles ORDER BY id") fun observe(): Flow<List<ProfileRow>>
+    @Query("SELECT id, CASE WHEN summary = '' THEN payload ELSE summary END AS payload, '' AS summary FROM profiles ORDER BY id") fun observe(): Flow<List<ProfileRow>>
     @Query("SELECT * FROM profiles ORDER BY id") suspend fun all(): List<ProfileRow>
+    @Query("SELECT * FROM profiles WHERE id = :id") suspend fun get(id: String): ProfileRow?
+    @Query("SELECT id FROM profiles") suspend fun ids(): List<String>
     @Upsert suspend fun put(row: ProfileRow)
+    @Upsert suspend fun putAll(rows: List<ProfileRow>)
     @Query("DELETE FROM profiles WHERE id = :id") suspend fun delete(id: String)
 }
 
-@Database(entities = [ProfileRow::class], version = 1, exportSchema = true)
+@Database(entities = [ProfileRow::class], version = 2, exportSchema = true)
 abstract class RemoteDatabase : RoomDatabase() {
     abstract fun profiles(): ProfileDao
     companion object {
-        fun open(context: Context) = Room.databaseBuilder(context, RemoteDatabase::class.java, "ir-hunter.db").build()
+        private val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE profiles ADD COLUMN summary TEXT NOT NULL DEFAULT ''")
+            }
+        }
+        fun open(context: Context) = Room.databaseBuilder(context, RemoteDatabase::class.java, "ir-hunter.db")
+            .addMigrations(MIGRATION_1_2).build()
     }
 }
 
@@ -38,9 +47,14 @@ object ProfileJson {
             }
             commands.put(j)
         }
-        return ProfileRow(p.id, JSONObject().put("name", p.name).put("category", p.category.name)
+        fun json(original: String, selected: List<RemoteCommand>) = JSONObject().put("name", p.name).put("category", p.category.name)
             .put("brand", p.brand).put("model", p.model).put("source", p.source).put("license", p.license)
-            .put("original", p.originalText).put("saved", p.saved).put("commands", commands).toString())
+            .put("original", original).put("saved", p.saved).put("commandCount", p.commandCount)
+            .put("commands", JSONArray().also { out -> selected.forEach { command ->
+                val index = p.commands.indexOf(command); if (index >= 0) out.put(commands.get(index))
+            } }).toString()
+        val summaryCommands = p.commands.filter { it.isOff || it.isToggle }
+        return ProfileRow(p.id, json(p.originalText, p.commands), json("", summaryCommands))
     }
     fun decode(row: ProfileRow): RemoteProfile {
         val j = JSONObject(row.payload)
@@ -56,6 +70,6 @@ object ProfileJson {
         }
         return RemoteProfile(row.id, j.getString("name"), DeviceCategory.valueOf(j.getString("category")),
             j.getString("brand"), j.getString("model"), j.getString("source"), j.getString("license"),
-            j.getString("original"), commands, j.getBoolean("saved"))
+            j.getString("original"), commands, j.getBoolean("saved"), j.optInt("commandCount", commands.size))
     }
 }

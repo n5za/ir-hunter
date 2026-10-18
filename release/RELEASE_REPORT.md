@@ -12,8 +12,9 @@ brand/model search and unknown-brand/model filters, local Flipper `.ir` import,
 profile-derived buttons, saving/renaming/editing/deleting, Room persistence,
 foreground guided scanning and selected-device All OFF with confirmation and status.
 AC captures use manual testing because they may encode complete appliance state.
-Version 1.1 also includes an offline catalog of 121 remote profiles containing
-2,586 commands, seeded into local storage on first launch.
+Version 1.2 includes an offline catalog of 5,554 remote profiles containing
+180,578 commands, seeded into local storage on first launch. Full command sets
+load on demand; list/search uses compact summaries to bound memory use.
 
 ## Important fixes
 
@@ -33,7 +34,7 @@ Version 1.1 also includes an offline catalog of 121 remote profiles containing
 ## Build and package
 
 Application ID / namespace: `com.irhunter.app`.
-Version: `1.1.0`, code `2`. Minimum SDK 24; target/compile SDK 35.
+Version: `1.2.0`, code `3`. Minimum SDK 24; target/compile SDK 35.
 JDK 17; Gradle wrapper 8.11.1; Android build tools 35.0.0.
 
 Command from the project root:
@@ -48,21 +49,21 @@ Package assembly succeeded. Package metadata, ZIP integrity, v2 debug signature 
 `com.irhunter.app.MainActivity`. No INTERNET permission is declared. IR hardware is
 optional for installation; transmitting requires a compatible built-in emitter.
 
-The APK and `SHA256SUMS` are attached to the [debug release](https://github.com/n5za/ir-hunter/releases/tag/v1.1.0-debug). Detailed local build logs were retained in the development workspace; they are not part of the public source tree. The complete Gradle command exited successfully.
-Final APK size: 18053624 bytes.
+The APK and `SHA256SUMS` are attached to the [debug release](https://github.com/n5za/ir-hunter/releases/tag/v1.2.0-debug). Detailed local build logs were retained in the development workspace; they are not part of the public source tree. The complete Gradle command exited successfully.
+Final APK size: 23194744 bytes.
 
 ## Test and lint results
 
-All 17 tests passed; zero failures, errors or skipped tests:
+All 18 tests passed; zero failures, errors or skipped tests:
 
 | Suite | Passed | Coverage |
 | --- | ---: | --- |
 | IrCodecTest | 7 | Known NEC timings, all protocol field round trips, repeat intervals, toggle widths, invalid patterns |
 | FlipperImporterTest | 3 | Little-endian fields, duplicate records, malformed and oversized input |
 | CommandRunnerTest | 4 | Candidate ordering/filtering, cancellation, OFF preference, per-device failures |
-| RemoteDatabaseTest | 1 | Create, edit, close/reopen restoration, delete and provenance persistence |
+| RemoteDatabaseTest | 2 | Create/edit/reopen/delete persistence plus compact summary integrity |
 | MainActivityTest | 1 | Robolectric launch, no-emitter message, Saved/All OFF navigation and disabled empty selection |
-| BundledCatalogTest | 1 | All 121 packaged profiles parse through the production importer into exactly 2,586 usable commands |
+| BundledCatalogTest | 1 | All 5,554 packaged profiles parse through the production importer into exactly 180,578 usable commands |
 
 Lint completed with zero errors and 54 dependency-version upgrade notices.
 No lint checks or tests were disabled. The Android 12 backup-rules warning was fixed.
@@ -87,10 +88,11 @@ adb shell am start -n com.irhunter.app/.MainActivity
 
 ## Data, licenses and remaining limits
 
-- The app bundles every usable file added after Flipper-IRDB's stated CC0 boundary:
-  121 profiles from pinned commit `d126fb1b6f1e114c52b4a8c19839ea65e3a9c24d`.
-  Three invalid-header files are excluded. Older files are outside upstream's current
-  CC0 grant and are not redistributed. Attribution is packaged with the catalog.
+- The app bundles all 5,433 profiles from the pinned official Flipper Devices IRDB
+  snapshot under MIT, plus every usable file added after community Flipper-IRDB's
+  stated CC0 boundary: 121 profiles. Three invalid-header community files are
+  excluded. Older community files are outside upstream's current CC0 grant and are
+  not redistributed. Exact source commits and license notices ship with the catalog.
 - Category availability does not guarantee a particular device is IR-compatible.
   USB/Bluetooth IR adapters and Bluetooth-only devices are unsupported.
 - Universal mixed-device `IR library file` files are deliberately not treated as

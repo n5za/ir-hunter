@@ -19,6 +19,7 @@ class HunterViewModel(application: Application) : AndroidViewModel(application) 
     val transmitter = AndroidIrTransmitter(application)
     private val runner = CommandRunner(transmitter)
     var profiles by mutableStateOf<List<RemoteProfile>>(emptyList()); private set
+    var openedProfile by mutableStateOf<RemoteProfile?>(null); private set
     var loading by mutableStateOf(true); private set
     var message by mutableStateOf(""); private set
     var busy by mutableStateOf(false); private set
@@ -53,6 +54,13 @@ class HunterViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
     fun notice(text: String) { message = text }
+    fun openProfile(id: String) {
+        viewModelScope.launch {
+            openedProfile = withContext(Dispatchers.IO) { database.profiles().get(id)?.let(ProfileJson::decode) }
+            if (openedProfile == null) message = "Remote profile is unavailable."
+        }
+    }
+    fun closeProfile() { openedProfile = null }
     fun readImport(uri: Uri) {
         viewModelScope.launch {
             try {
@@ -94,13 +102,13 @@ class HunterViewModel(application: Application) : AndroidViewModel(application) 
     }
     fun update(profile: RemoteProfile) {
         viewModelScope.launch {
-            try { database.profiles().put(ProfileJson.encode(profile)); message = "Saved ${profile.name}" }
+            try { database.profiles().put(ProfileJson.encode(profile)); if (openedProfile?.id == profile.id) openedProfile = profile; message = "Saved ${profile.name}" }
             catch (e: Exception) { message = "Save failed: ${e.message}" }
         }
     }
     fun delete(profile: RemoteProfile) {
         viewModelScope.launch {
-            try { database.profiles().delete(profile.id); message = "Deleted ${profile.name}" }
+            try { database.profiles().delete(profile.id); if (openedProfile?.id == profile.id) openedProfile = null; message = "Deleted ${profile.name}" }
             catch (e: Exception) { message = "Delete failed: ${e.message}" }
         }
     }
@@ -132,7 +140,13 @@ class HunterViewModel(application: Application) : AndroidViewModel(application) 
     fun confirmCandidate() {
         val c = lastCandidate ?: return
         stop()
-        update(c.profile.copy(saved = true))
+        viewModelScope.launch {
+            try {
+                val full = withContext(Dispatchers.IO) { database.profiles().get(c.profile.id)?.let(ProfileJson::decode) }
+                    ?: error("Candidate profile is unavailable")
+                update(full.copy(saved = true))
+            } catch (e: Exception) { message = "Save failed: ${e.message}" }
+        }
     }
     fun allOff(selected: List<RemoteProfile>) {
         if (busy) return

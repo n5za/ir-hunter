@@ -49,10 +49,10 @@ private fun HunterApp(vm: HunterViewModel) {
     var confirmOff by remember { mutableStateOf(false) }
     var selected by rememberSaveable { mutableStateOf(listOf<String>()) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(vm::readImport) }
-    val opened = vm.profiles.firstOrNull { it.id == openedId }
+    val opened = if (openedId != null) vm.openedProfile else null
     val candidates = Candidates.ordered(vm.profiles, category, brand, model)
     val offProfiles = vm.profiles.filter { it.saved && it.id in selected }
-    BackHandler(openedId != null || vm.busy) { vm.stop(); openedId = null }
+    BackHandler(openedId != null || vm.busy) { vm.stop(); vm.closeProfile(); openedId = null }
 
     Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 16.dp)) {
         Text("IR HUNTER", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(top = 16.dp))
@@ -78,7 +78,7 @@ private fun HunterApp(vm: HunterViewModel) {
         if (opened != null) {
             LazyColumn(modifier = Modifier.testTag("contentList"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 item {
-                    TextButton(onClick = { vm.stop(); openedId = null }) { Text("Back") }
+                    TextButton(onClick = { vm.stop(); vm.closeProfile(); openedId = null }) { Text("Back") }
                     Text(opened.name, style = MaterialTheme.typography.headlineSmall)
                     Text("${opened.category.displayName} · ${opened.brand} · ${opened.model}")
                     Text("Source: ${opened.source}\nLicense: ${opened.license}", style = MaterialTheme.typography.bodySmall)
@@ -162,10 +162,10 @@ private fun HunterApp(vm: HunterViewModel) {
                     Text("No matching profiles. Try another brand or category, or import a Flipper .ir file to add your own remote. Bundled codes only cover common devices — your model may need a manual import.")
                 }
                 items(visible, key = { it.id }) { p ->
-                    OutlinedButton(onClick = { openedId = p.id }, enabled = !vm.busy, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(onClick = { openedId = p.id; vm.openProfile(p.id) }, enabled = !vm.busy, modifier = Modifier.fillMaxWidth()) {
                         Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                             Text(p.name, style = MaterialTheme.typography.titleMedium)
-                            Text("${p.brand} · ${p.model} · ${p.commands.size} commands")
+                            Text("${p.brand} · ${p.model} · ${p.commandCount} commands")
                         }
                     }
                 }

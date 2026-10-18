@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0-debug
+
+- Added the complete usable official Flipper Devices IRDB snapshot: 5,433 MIT-licensed profiles.
+- The combined offline catalog now contains 5,554 remotes and exactly 180,578 usable commands.
+- Added lightweight database summaries and on-demand full-profile loading so the large catalog does not load every command into memory at once.
+- Added a Room 1→2 migration and retained user profiles from earlier releases.
+- Pinned and packaged the official database's MIT notice and source commit.
+
 ## 1.1.0-debug
 
 - Added 121 offline remote profiles containing 2,586 usable commands.
