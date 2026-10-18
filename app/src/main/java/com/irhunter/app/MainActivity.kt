@@ -159,7 +159,7 @@ private fun HunterApp(vm: HunterViewModel) {
                     }
                 }
                 if (visible.isEmpty()) item {
-                    Text("No matching profiles. Import a Flipper .ir remote for this category or clear your search. No device codes are bundled with this build.")
+                    Text("No matching profiles. Try another brand or category, or import a Flipper .ir file to add your own remote. Bundled codes only cover common devices — your model may need a manual import.")
                 }
                 items(visible, key = { it.id }) { p ->
                     OutlinedButton(onClick = { openedId = p.id }, enabled = !vm.busy, modifier = Modifier.fillMaxWidth()) {

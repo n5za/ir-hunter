@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.irhunter.core.data.BundledSeeder
 import com.irhunter.core.data.FlipperImporter
 import com.irhunter.core.database.*
 import com.irhunter.core.ir.AndroidIrTransmitter
@@ -29,6 +30,20 @@ class HunterViewModel(application: Application) : AndroidViewModel(application) 
 
     init {
         viewModelScope.launch {
+            // Seed the bundled offline code library before first render so the Library is
+            // useful on a fresh install. A seed failure must not block reading the database.
+            try {
+                val report = withContext(Dispatchers.IO) {
+                    BundledSeeder.seed(getApplication(), database)
+                }
+                if (report.added > 0 || report.skipped.isNotEmpty()) {
+                    message = "Loaded ${report.added} bundled remotes with ${report.commands} commands." +
+                        if (report.skipped.isEmpty() && report.recordWarnings == 0) "" else
+                            " Skipped ${report.skipped.size} files and ${report.recordWarnings} unusable records."
+                }
+            } catch (e: Exception) {
+                message = "Bundled code library unavailable: ${e.message}"
+            }
             try {
                 database.profiles().observe().collect { rows ->
                     profiles = rows.map(ProfileJson::decode)

@@ -22,7 +22,7 @@
 
 IR Hunter is an Android infrared remote manager built with Kotlin, Jetpack Compose and Room. Import your remote's Flipper `.ir` file, organize its commands, save profiles, and test matching power commands with a cancellable guided scan.
 
-> **Before installing:** transmitting requires a phone with a compatible **built-in IR emitter**. Android version alone is not enough. The app starts with an **empty library**: import device codes before using a remote. The downloadable APK is a **debug test build**; physical IR operation has not yet been verified on hardware.
+> **Before installing:** transmitting requires a phone with a compatible **built-in IR emitter**. Android version alone is not enough. Version 1.1 includes an offline starter catalog and still supports importing more device codes. The downloadable APK is a **debug test build**; physical IR operation has not yet been verified on hardware.
 
 ## What it does
 
@@ -34,7 +34,7 @@ IR Hunter is an Android infrared remote manager built with Kotlin, Jetpack Compo
 | Real command buttons | Show commands contained in the selected profile; no pretend buttons for missing commands. |
 | Guided Auto Scan | Test matching imported power candidates with three-second pauses, progress and STOP. Save the candidate after observing a response. |
 | All Devices OFF | Select saved devices, review commands, confirm, then transmit sequentially with per-device status and cancellation. |
-| Offline operation | Local storage and IR transmission require no account, server or internet permission after import. |
+| Offline operation | Bundled profiles, local storage and IR transmission require no account, server or internet permission. |
 | Hardware feedback | Explain missing emitters, unsupported frequencies and invalid patterns. |
 
 **Categories:** TV · Mi TV / Mi Box · Set-top Box · Air Conditioner · Fan · Smart Box · A/V Receiver · DVD / Blu-ray · Projector · Chinese Satellite · Camera · Other.
@@ -48,7 +48,7 @@ A category is an organizational choice, not a device-compatibility guarantee. Bl
 1. Open the [v1.0.0-debug release](https://github.com/n5za/ir-hunter/releases/tag/v1.0.0-debug).
 2. Download **`IR-Hunter-debug.apk`** from **Assets**. The source ZIP is not the installer.
 3. Open the downloaded APK. If Android asks, allow installation from that browser/file manager, then install.
-4. Open **IR Hunter**. Check the hardware message, then import your `.ir` remote.
+4. Open **IR Hunter**. The bundled catalog loads on first launch; search it or import your own `.ir` remote.
 
 **Requirements:** Android 7.0 / API 24 or newer. A compatible built-in IR emitter is required for transmission; library management also works without one. USB and Bluetooth blasters are not supported.
 
@@ -96,7 +96,7 @@ Get-FileHash .\IR-Hunter-debug.apk -Algorithm SHA256
 - Duplicate commands are skipped with warnings; invalid, conflicting or unsupported records are reported.
 - Mixed-device `IR library file` databases are not imported as one remote.
 
-No third-party code database is bundled. Import files you are entitled to use; importing a file does not grant redistribution rights. Original comments and attribution remain in local storage.
+Version 1.1 bundles every usable profile added after Flipper-IRDB's stated CC0 licensing boundary: 121 remotes and 2,586 commands from the pinned upstream snapshot. Three additional files at that boundary have invalid Flipper headers and are excluded. Older upstream files are not bundled because Flipper-IRDB explicitly says they are outside its current CC0 grant. Exact source commits and attribution are stored with the app in `core/data/src/main/assets/third_party/ATTRIBUTION.md`. You can still import files you are entitled to use; importing a file does not grant redistribution rights.
 
 ## Build and verification
 
@@ -120,7 +120,7 @@ app/            Compose screens, navigation and application state
 core/model/     Categories, signals, commands and remote profiles
 core/ir/        Protocol codecs, validation and Android transmission
 core/database/  Room storage and profile serialization
-core/data/      Flipper .ir importer
+core/data/      Bundled offline catalog and Flipper .ir importer
 core/scan/      Candidate ordering and cancellable command sequences
 docs/           Build guide and README artwork
 ```
