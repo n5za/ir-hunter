@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.IRHunter" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#10171C</item>
+        <item name="android:navigationBarColor">#10171C</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowBackground">#10171C</item>
+    </style>
+</resources>

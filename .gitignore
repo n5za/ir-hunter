@@ -1,0 +1,26 @@
+# Build outputs and machine-local Android configuration
+.gradle/
+.kotlin/
+**/build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+
+# Private configuration and signing material
+.env
+.env.*
+*.jks
+*.keystore
+*.p12
+*.pem
+keystore.properties
+
+# Distributed through GitHub Releases, not source history
+*.apk
+*.aab
+release/*.log
+release/apk-metadata.txt
+release/apk-signature.txt
+release/lint-results-debug.txt
+release/test-results/

@@ -1,0 +1,28 @@
+name: Bug report
+description: Report a reproducible problem in IR Hunter.
+title: "[Bug]: "
+body:
+  - type: input
+    id: version
+    attributes:
+      label: App version and installation source
+      placeholder: 1.0.0-debug from GitHub Releases
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Phone model, Android version and IR emitter availability
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce, expected behavior and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs, screenshots and remote/protocol details
+      description: Remove personal information. Include a minimal .ir example only if you may redistribute it. State whether you physically observed the appliance.
